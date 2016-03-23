@@ -1,0 +1,445 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>产品详情</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no, email=no" />
+<link rel="stylesheet" href="${ctx}/css/reset.css?v=2">
+<link rel="stylesheet" href="${ctx}/css/main.css?v=2">
+<script charset="utf-8" type="text/javascript" src="${ctx}/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="${ctx}/js/zepto.min.js" ></script>
+<script src="../js/jweixin-1.0.0.js"></script>
+<style>
+	body{ background: #ffffff;}
+	.circle{ left: 1rem; margin-top: 1rem; width: 7rem; height: 7rem; background: #b50720;}
+	.mask{ background: #ffffff; color: #b5081f;}
+	.pie_left, .pie_right{ width: 7rem; height: 7rem;}
+	.pie_right, .right { clip: rect(0,auto,auto,3.5rem); }
+	.pie_left, .left { clip: rect(0,3.5rem,auto,0); }
+	.left, .right { width: 7rem; height: 7rem; background: #e5e5e5; position: absolute; top: 0; left: 0; }
+	.mask { font-size: 1rem; width: 6.4rem; height: 6.4rem; line-height: 1.8rem; border-radius: 50%; left: 0.3rem; top: 0.3rem;}
+	.pro-detail .top{ background: none; height: 9rem;}
+	.pro-detail .top .hot{ color: #b5081f;}
+	.pro-detail .top .hot span{ background: #b6081f; color: #ffffff;}
+	.mask{ line-height: auto;}
+	.mask font{ display: block; color: #999999;}
+	.mask span { font-size: 1.58rem; display: inline-block; padding-top: 1.5rem;}
+
+/* @media screen and (max-width: 320px) {
+    .pro-detail .top{}
+} */
+</style>
+</head>
+<body>
+
+<script>
+
+//alert("${experienceNum}")
+if(localStorage.productDetailFlag == 1 || typeof(localStorage.productDetailFlag) == "undefined"){
+	
+}else{
+	localStorage.productDetailFlag = 1;
+	//alert("fresh")
+	history.go(0);
+}
+
+//初始化客户端变量
+localStorage.activityGiveEarn=null;
+
+ var investMinArr = new Array();
+ var profitArr = new Array();
+ var profitHaveFlag = "${profitHaveFlag}";
+ var profitCro ;
+ var expectEarn;
+ var giveEarn;
+ 
+ function changeInvest(){
+	 profitCro = null;
+	 var vestMount = $("#investAmount").val();
+	 if(vestMount == "" || vestMount == null || vestMount == 0){
+		 $("#investAmount").val("");
+		 $("#investAmount").attr("placeholder","${productInfo.minInvestamt}元起投")
+		 $("#buyAmount").text("0元")
+		 <#if buyGiveShow == '1'>
+		 $("#expectedEarn").text("0元")
+		 </#if>
+		 return false;
+	 }
+	 vestMount=vestMount.replace(/\D/g,'');
+	 $("#investAmount").val(vestMount);
+	 $("#buyAmount").text(vestMount+"元")
+	 if(vestMount == "" || vestMount == null || vestMount == 0){
+		 $("#investAmount").val("");
+		 $("#investAmount").attr("placeholder","${productInfo.minInvestamt}元起投")
+		 $("#buyAmount").text("0元")
+		 <#if buyGiveShow == '1'>
+		 $("#expectedEarn").text("0元")
+		 </#if>
+		 return false;
+	 }
+	 vestMount = parseInt(vestMount);
+	 if(vestMount == "" || vestMount == null || vestMount == 0){
+		 $("#investAmount").val("");
+		 $("#investAmount").attr("placeholder","${productInfo.minInvestamt}元起投")
+		 $("#buyAmount").text("0元")
+		 <#if buyGiveShow == '1'>
+		 $("#expectedEarn").text("0元")
+		 </#if>
+		 return false;
+	 }
+	 $("#investAmount").val(vestMount);
+	
+	 
+	 console.log("change..");
+	 if(profitHaveFlag > 0){
+		 console.log("profitHaveFlag == 1");
+		 var investLength = investMinArr.length;
+		 console.log("investLength:"+investLength)
+		 var times = 0;
+		 for(i=investLength-1;i>=0;i--){
+			 if(parseInt(vestMount) >= parseInt(investMinArr[i])){
+				 console.log("parseInt(vestMount):"+parseInt(vestMount))
+				 console.log("parseInt(investMinArr[i]):"+investMinArr[i])
+				 profitCro = parseFloat(profitArr[i]);
+				 console.log("profit:"+profitArr[i])
+				 break;
+			 }
+			 
+		 }
+		 if(typeof(profitCro) == "undefined" || profitCro ==  null || profitCro == ""){
+			 $("#profit").text("0%")
+			 $("#expectedEarn").text("0元")
+			 console.log("not fount");
+			 return false; //说明循环完没有找到对应范围
+		 }
+	 }else{
+		 console.log("profitHaveFlag == 0")
+		 profitCro = parseFloat("${profit}");
+	 }
+	 $("#profit").text(profitCro+"%")
+	 expectEarn = parseInt(vestMount)*parseInt("${productInfo.timeLong}")*parseFloat(profitCro)/365/100;
+	 expectEarn = expectEarn.toFixed(2);
+	 
+	 <#if buyGiveShow == '111'>
+	 //alert("investamount:"+parseInt(vestMount) +" days: ${giveDay}"+"profit:${giveProfit} ")
+	 giveEarn = parseInt(vestMount)*parseInt("${giveDay}")*parseFloat("${giveProfit?string('#.00')}")/365/100;
+	 
+	 $("#expectedEarn").text(expectEarn+"元"+giveEarn.toFixed(2)+"元(送)")
+	 localStorage.activityGiveEarn=giveEarn.toFixed(2);
+	 <#else>
+	 $("#expectedEarn").text(expectEarn+"元")
+	 </#if>
+ }
+ 
+</script>
+	<div class="wrapper">
+		<div class="pro-detail"  >
+			<div class="top">
+				<div class="circle">
+                    <div class="pie_left"><div class="left"></div></div>
+                    <div class="pie_right"><div class="right"></div></div>
+                    <div class="mask"><span><#if (productInfo.prdSpeed)??>${productInfo.prdSpeed?string("0.##")}</#if></span>%<font>投资进度</font></div>
+                </div>
+                <div class="hot">${productInfo.prdName}${productInfo.prdSubName}<span>热</span></div>
+                <img class="lk_icon" src="../images/lk_icon.png">
+			</div>
+			<div class="nav">
+				<ul>
+					<li>
+						<p>预期年化收益</p>
+						<#if profitHaveFlag == 2 >
+							<span>${profitMin?string('0.##')}~<font>${profitMax?string('0.##')}</font>%</span>
+						<#else>
+							<span><font>${profit?string('0.##')}</font>%</span>
+						</#if>
+					</li>
+					<li>
+						<p>投资期限</p>
+						<span><font><#if (productInfo.timeLong)??>${productInfo.timeLong}</#if></font>天</span>
+					</li>
+					<li>
+						<p>已投人数</p>
+						<span><#if (productInfo.producatLimitInfo.saleNum)??>${productInfo.producatLimitInfo.saleNum}</#if></span>
+					</li>
+				</ul>
+				<div class="fix"></div>
+			</div>
+			<div class="cont-bt">
+				<div class="Profit">
+				
+				<#list productProfitInfoList as productProfitInfo>
+						<script>
+							investMinArr.push("${productProfitInfo.investMin}");
+							profitArr.push(parseFloat("${productProfitInfo.profit?string('0.##')}"));
+							console.log("investMinArr:"+"${productProfitInfo.investMin}")
+						</script>
+				</#list>
+				
+					 <!-- <h1>阶梯预期年化</h1> 
+					<div class="sy" style="display:none;">
+						<p>
+						<a><span>投资额</span></a>
+						<#list productProfitInfoList as productProfitInfo>
+						<script>
+							investMinArr.push("${productProfitInfo.investMin}");
+							profitArr.push(parseFloat("${productProfitInfo.profit?string('0.##')}"));
+						</script>
+							<#if productProfitInfo.investMax == null>
+								<a><span><#if (productProfitInfo.investMin)??>${productProfitInfo.investMin/10000}</#if>万以上</span></a>
+							<#else>
+								<a><span><#if (productProfitInfo.investMin)??>${productProfitInfo.investMin/10000}</#if>~<#if (productProfitInfo.investMax)??>${productProfitInfo.investMax/10000}</#if>万</span></a>
+							</#if>
+						</#list>
+						</p>
+						<p>
+						<a><span>预期年化</span></a>
+						<#list productProfitInfoList as productProfitInfo>
+							<a><span><#if (productProfitInfo.profit)??>${productProfitInfo.profit?string('0.##')}</#if>%</span></a>
+						</#list>
+						</p>
+					</div> -->
+					
+					
+					
+					<div class="four">
+						<a><img src="${ctx}/images/pro_001.png"></a>
+						<a><img src="${ctx}/images/pro_002.png"></a>
+						<a><img src="${ctx}/images/pro_003.png"></a>
+						<a><img src="${ctx}/images/pro_004.png"></a>
+					</div>
+					<a class="protocol" href="${ctx}/protocol/toInvestProtocol.htm"><p>协议范本</p></a>
+					<p class="introduce"> 玖富精心打造优选理财组合，本组合基于大数据、便捷高效的自动投标理财生态系统而产生，所对应的由系统自动分散投资，到期可续投，续投期间预期年化收益率保持不；该组合所有标的均适用于玖富资金安全保障计划，满足用户更便捷灵活安全的投资需求。</p>
+				</div>	
+			</div>
+			<div class="consult" style="height:auto;">
+				<div class="tl">
+					<!--  -->
+	<#if productInfo.prdId == '4561'>
+	<p class="gf0">45天理财产品已售罄，2016年1月1日恢复购买，感谢您的理解与支持！</p>
+	
+	</#if>
+				</div>
+				
+				<a id="startBuyBtn" class="btn send <#if productInfo.prdId == '4561'>gray</#if>" onclick="startBuy()" style=" margin-bottom: 0.5rem;"><span>立即投资</span></a>
+			</div>
+		</div>
+		<!-- 弹层 3点击图片对应文字-->
+		<div class="txt-description hide">
+			<!-- 资金保障计划：筛选优质债权，服务微小商户。 -->
+			<!-- 快速投资  完善安全技术 三方支付 -->
+			<!-- 及时兑付 到期还本付息 -->
+			<p id="showTTT">T+1计息：投资次日开始计息</p>
+		</div>
+		<!-- <div class="consult"  style="height:auto;">
+		<#if (experienceNum > 0)>
+			<div class="tl">
+				<p>每投资固定收益产品一次，可使用一张体验金券。</p>
+				<p>当前拥有体验金<span>${experienceNum}</span>张，可同时使用体验金<span>1</span>张</p>
+			</div>
+			</#if>
+			<a class="btn send" ><span>立即投资</span></a>
+		</div> -->
+		
+		<!-- 弹层1 -->
+		<div class="tcBox hide" id="goOnLayer">
+		<div class="opa-div"></div>
+			<div style=" position:fixed; bottom:0px; width:100%; background:#f5f5f5; padding-bottom:0.3rem;">
+				<div class="way">
+				
+				<#if buyGiveShow == '1'>
+				<!-- <h2>赠送本金</h2>
+					<div class="radio3" style="position:relative;">
+						<a><img style="width:1rem;margin-right:4.5rem;" src="../images/radio_on.png"></a>
+						<div class="tyj_cont">
+							<div>
+								<p>送本金<span id="buyAmount">0元</span></p>
+								<p>预期年化收益率<span>${giveProfit?string("0.##")}%</span></p>
+								<p>投资期限<span>${giveDay}天</span></p>
+							</div>
+							<div class="due">2015-12-31到期</div>
+						</div>
+					</div>
+					<div class="fix"></div> -->
+				</#if>
+				
+				<#if (experienceNum > 0)>
+				<h2>体验金</h2>
+					<div class="radio3" style="position:relative;">
+					  <a><img style="width:1rem;margin-right:4.5rem;" src="../images/radio_on.png"></a>
+					  <div class="tyj_cont bg_blue">
+						<div>
+							<p>体验金<span>10000元</span></p>
+							<p>预期年化收益率<span>6.6%</span></p>
+							<p>投资期限<span>2天</span></p>
+						</div>
+						<div class="due">2015-12-31到期</div>
+					</div>
+					</div>
+					</#if>
+					<div class="fix"></div>
+				
+				
+					<!-- <h2>到期处理方式</h2>
+					<div class="radio3">
+					
+					<a <#if productInfo.continueStatus != 3>style="display:none"</#if>>
+					<input type="radio" id="nba" <#if productInfo.continueStatus == 3>checked="checked"</#if> name="continueStatus" value="3"/>
+					  <label name="nba" <#if productInfo.continueStatus == 3>class="checked"</#if>>到期赎回</label>
+					  </a>
+					  
+					  <a <#if productInfo.continueStatus == 3>style="display:none"</#if>>
+					  <input type="radio" <#if productInfo.continueStatus == 0>checked="checked"</#if> value="0" id="zba"  name="continueStatus"/>
+					  <label name="zba" <#if productInfo.continueStatus == 0>class="checked"</#if>>到期赎回</label>
+					  </a>
+					  
+					  <a <#if productInfo.continueStatus == 3>style="display:none"</#if>>
+					  <input type="radio" <#if productInfo.continueStatus == 3>disabled="disabled"</#if> value="1" <#if productInfo.continueStatus == 1>checked="checked"</#if> id="cba" name="continueStatus" />
+					  <label name="cba" <#if productInfo.continueStatus == 1>class="checked"</#if>>本金续投</label>
+					  </a>
+					  
+					  
+					  <a <#if productInfo.continueStatus == 3>style="display:none"</#if>>
+					  <input type="radio" <#if productInfo.continueStatus == 3>disabled="disabled"</#if>value="2" <#if productInfo.continueStatus == 2>checked="checked"</#if> id="aba" name="continueStatus" />
+					  <label name="aba" <#if productInfo.continueStatus == 2>class="checked"</#if>>本息续投</label>
+					  </a>
+					  
+					</div> -->
+					<div class="fix"></div>
+					<div class="expectSy">
+						<span>预期年化收益率<em id="profit">0%</em></span>
+						<span>预期收益<em id="expectedEarn">0元</em></span>
+					</div>
+					<p><input type="tel" id="investAmount" onkeyup="changeInvest();"  placeholder="${productInfo.minInvestamt}元起投"></p>
+					<a id="errorInfo" class="error"></a>
+				</div>
+				<p class="tc"><a class="btn invest" onclick="javascript:placeOrder();"><span >立即投资</span></a></p>
+			</div>
+		</div>
+		
+	</div>
+	<script>
+	
+		function startBuy(){
+			if($("#startBuyBtn").attr("class").indexOf("gray") > -1){
+				//alert("此产品暂时不能购买！")
+				return;
+			}
+			$('#goOnLayer').removeClass('hide');
+		}
+	
+	    $(function() {
+	    	
+	    	$(".four a").click( function(){
+	    		var ii = $(this).index()
+	    		if(ii == 0){
+	    			$("#showTTT").text("T+0计息：投资当日计息");
+	    		}else if(ii == 1){
+	    			$("#showTTT").text("资金保障计划：筛选优质债权，服务微小商户");
+	    		}
+	    		else if(ii == 2){
+	    			$("#showTTT").text("快速投资  完善安全技术 三方支付");
+	    		}else if(ii == 3){
+	    			$("#showTTT").text("产品结束后按时返还本金和收益");
+	    		}
+	    		
+	    		
+			  	$(".txt-description").show();
+			  })
+			  $(".txt-description").click(function(){
+			  	$(this).hide();
+			  })
+	    	
+	        $('.circle').each(function(index, el) {
+	        	var num = $(this).find('span').text() * 3.6;
+				if (num<=180) {
+					$(this).find('.right').css({'transform': "rotate(" + num + "deg)",'-moz-animation':'ss 1s ease-out','-webkit-animation':'ss 1s ease-out','animation':'ss 1s ease-out'});
+				} else {
+					$(this).find('.right').css('transform', "rotate(180deg)");
+					$(this).find('.left').css({'transform':"rotate(" + (num - 180) + "deg)",'-moz-animation':'ss 1s ease-out','-webkit-animation':'ss 1s ease-out','animation':'ss 1s ease-out'});
+				};
+	        });
+	        
+	        $('label').click(function(){
+	        	<#if productInfo.continueStatus == 3>
+	        	return false;
+	        	</#if>
+			    var radioId = $(this).attr('name');
+			    $('label').removeAttr('class') && $(this).attr('class', 'checked');
+			    $('input[type="radio"]').removeAttr('checked') && $('#' + radioId).attr('checked', 'checked');
+			  });
+	        
+	        $("#investAmount").focus(function(){
+	        	$("#errorInfo").text("");
+	        });
+	        
+	        $(".opa-div").click(function(){
+				$(".tcBox").addClass("hide");
+			  })
+	    });
+	    
+	    function placeOrder(){
+	    	console.log("placeorder")
+	    	var reg = /^[0-9]*$/;
+		   	if(!reg.test($("#investAmount").val())){
+		   		$("#errorInfo").text("请输入正确投资金额");
+		   		 return ;
+		   	}
+	   	 var continueStatus =  $("input[name='continueStatus']:checked").val();
+	   	 console.log("continueStatus: "+continueStatus)
+	   	 /* if(typeof(continueStatus) == "undefined" || continueStatus == null){
+	   		 alert("请选择到期处理方式")
+	   		 return;
+	   	 } */
+	   	 var investAmount = parseInt($("#investAmount").val());
+	   	 var minInvestamt = parseInt("${productInfo.minInvestamt}");
+	   	var mixInvestamt = parseInt("${productInfo.maxInvestamt}");
+	   	var increasingAmount = parseInt("${productInfo.increasing_amount}")
+	   	 var restAmt = parseInt("${productInfo.producatLimitInfo.restAmt}");
+	   	 var avaAmount = parseInt("${productInfo.producatLimitInfo.avaAmt}");
+	   	 //alert("qitou: "+minInvestamt)
+	   	 investAmount +="";
+	   	 investAmount=investAmount.replace(/\D/g,'');
+	   	
+	   	 
+	   	 console.log(" investAmount: "+investAmount+" minInvestamt: "+minInvestamt+" restAmt: "+restAmt+" avaAmount: "+avaAmount);
+	   //	alert(" investAmount: "+investAmount+" minInvestamt: "+minInvestamt+" restAmt: "+restAmt+" avaAmount: "+avaAmount);
+	   
+	   	
+	   
+	   
+	   if( investAmount < minInvestamt ){
+		   $("#errorInfo").text("最小投资金额为"+minInvestamt+"元");
+	   		 return ;
+	   	 }
+	   
+	   if(investAmount > mixInvestamt){
+		   $("#errorInfo").text("最大投资金额为"+mixInvestamt+"元");
+	   		 return ;
+	   	 }
+
+	   	 
+	   	 if(investAmount > avaAmount){
+	   		$("#errorInfo").text("本产品可用额度"+avaAmount+"元");
+	   		 return ;
+	   	 }
+	   	 
+	 	if(investAmount%increasingAmount != 0){
+	   		$("#errorInfo").text("投资金额必须是"+increasingAmount+"的整数倍")
+	   		return;
+	   	}
+	   	
+			//alert("pass")
+	   	 //alert($("#investAmount").val())
+	   	 //alert("pass profitCro:"+profitCro)
+	   	 localStorage.productDetailFlag = 0;
+	   	 window.location.href="${ctx}/order/authorityCheck.htm?fromPage=productDetail&userId="+localStorage.userId+"&prdId=${productInfo.prdId}&investAmount="+$("#investAmount").val()+"&url="+window.location.href+"&continueStatus=0&profitCro="+profitCro+"&expectEarn="+expectEarn;
+	   	 
+	    }
+	</script>
+ 
+ 
+</body>
+</html>

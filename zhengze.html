@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+<script charset="utf-8" type="text/javascript" src="jquery-1.8.3.min.js"></script>
+</head>
+<script>
+function check(){
+	//var p1 = new RegExp("e");
+	//var p1 = /^\\d+(\\.\\d+)?$/
+	/*
+	var p1 = /^(([0-9]|([1-9][0-9]{0,9}))((\.[0-9]{1,2})?))$/;
+	var result = p1.test($("#content").val());
+	console.log("result:"+result)
+	if(result){
+		alert("ok")
+	}
+	*/
+	
+	var vestMount= $("#content").val();
+	alert(vestMount.replace(/[^0-9]/g,''))
+	
+}
+
+function changeInvest(){
+	
+}
+
+$(function(){
+var avalibleMount = parseFloat("26.00");
+var mount = parseFloat("26");
+var result = avalibleMount-mount
+alert(result < parseFloat("0.00"))
+})
+
+function show(){
+	alert($("#hideINput").val())
+}
+
+
+</script>
+<body>
+<input type="text" id="content" />
+
+<input type="button" onkeyup="changeInvest();" onclick="check()" value="check" />
+
+
+<div id="myDiv" style="display:none;">
+<input type="text" id ="hideINput" />
+
+<input type="button" id ="showBtn" onclick="show();" />
+
+</div>
+
+<input type="button" value="showdiv" onclick="javascript:$('#myDiv').show();" />
+
+</body>
+
+</html>
