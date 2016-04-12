@@ -6,24 +6,26 @@
 
 
 <input id="test" type="checkbox" />
-<input type="button" name="fuck" value="check" onclick="check()" />
+<input type="button" name="fuck" value="check" onclick="check($(this))" />
 <a id="tttt" href="water.html" ccc="shit" >跳转</a>
 <script>
-//alert("Hello from VBScript!")
+
 
 $(function(){
 var aaaaa = 'jfeifjeij'
-alert(aaaaa.length)
-confirm("jfieji");
+
+
 $("#test").attr("checked",false)
 })
 
 console.log("Hello from VBScript!")
 
-function check(){
+function check(obj){
 
 	//alert($("input:checked").length)
-	alert($("#test").attr("checked"))
+	//alert($("#test").attr("checked"))
+	
+	alert(obj.val())
 
 }
 </script>
